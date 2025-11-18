@@ -1,0 +1,68 @@
+{
+  "app": {
+    "signingConfigs": [
+      {
+        "name": "default",
+        "type": "HarmonyOS",
+        "material": {
+          "storeFile": "E:/LI_shang/Fare_key/Fare.p12",
+          "storePassword": "0000001B3A48E0792C85481E49E5B242B87273818D1E223CEDDFDA2B387E6F328BE5BFBEC1C8B6554D5A5C",
+          "keyAlias": "Fare_release",
+          "keyPassword": "0000001BF7BC5EDC0E250B3DDE7495B722BCDDC3B76B4C251E5D94A76C5DA39ED56514BD83436F4656A789",
+          "signAlg": "SHA256withECDSA",
+          "profile": "E:/wulioadeshendoubuzhidaoshigeshawanyier_Some/magic/magicbookKey/magicbookRelease.p7b",
+          "certpath": "E:/wulioadeshendoubuzhidaoshigeshawanyier_Some/magic/magicbookKey/Farewell.cer"
+        }
+      }
+    ],
+    "products": [
+      {
+        "name": "default",
+        "signingConfig": "default",
+        "targetSdkVersion": "6.0.0(20)",
+        "compatibleSdkVersion": "6.0.0(20)",
+        "runtimeOS": "HarmonyOS",
+        "buildOption": {
+          "strictMode": {
+            "caseSensitiveCheck": true,
+            "useNormalizedOHMUrl": true
+          }
+        }
+      }
+    ],
+    "buildModeSet": [
+      {
+        "name": "debug"
+      },
+      {
+        "name": "release"
+      }
+    ]
+  },
+  "modules": [
+    {
+      "name": "entry",
+      "srcPath": "./entry",
+      "targets": [
+        {
+          "name": "default",
+          "applyToProducts": [
+            "default"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "app_setting",
+      "srcPath": "./ohos_agcit/agcit_huawei_common_app_setting/app_setting"
+    },
+    {
+      "name": "personal_notes",
+      "srcPath": "./ohos_agcit/agcit_huawei_notes_tool/personal_notes"
+    },
+    {
+      "name": "aggregated_share",
+      "srcPath": "./ohos_agcit/agcit_huawei_common_share/aggregated_share"
+    }
+  ]
+}
