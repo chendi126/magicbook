@@ -6,7 +6,9 @@
 
 [![HarmonyOS](https://img.shields.io/badge/HarmonyOS-5.0+-blue.svg)](https://developer.huawei.com/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-green.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/Version-2.0.0-orange.svg)](https://github.com)
+[![Version](https://img.shields.io/badge/Version-2.0.0-orange.svg)](https://github.com/chendi126/magicbook/releases)
+[![Language](https://img.shields.io/badge/Language-ArkTS-purple.svg)](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides-V5/arkts-get-started-V5)
+[![Stars](https://img.shields.io/github/stars/chendi126/magicbook?style=social)](https://github.com/chendi126/magicbook/stargazers)
 
 </div>
 
@@ -259,10 +261,43 @@
 
 ---
 
+## 🎉 v2.0.0 更新亮点
+
+### 📊 重大更新
+- 🚀 功能深度提升 **133%**（3个 → 7个核心功能）
+- 🎨 交互设计全面改善（线性流程 → 多维度闭环）
+- 📚 教育价值从无到有（系统化配色教程）
+- 🔧 专业价值显著提升（符合国际标准）
+
+### ✨ 新增功能
+- **配色实验室** - 从零创建配色，HSL 精确调整
+- **配色分析仪表盘** - 色彩情感分析 + WCAG 检查
+- **配色对比工具** - 多方案对比，数据化分析
+- **配色学习中心** - 6 大理论 + 3 类案例
+
+### 🐛 问题修复
+- 修复学习中心滚动区域底部内容被 Tab 栏遮挡的问题
+- 优化 UI 交互和视觉效果
+
+[查看完整更新日志](https://github.com/chendi126/magicbook/releases/tag/v2.0.0)
+
+---
+
 ## 📞 联系我们
 
 - **问题反馈**：通过应用内"我的"页面提交
 - **功能建议**：欢迎提出您的想法
+- **GitHub Issues**：[提交问题](https://github.com/chendi126/magicbook/issues)
+
+---
+
+## 🌟 支持项目
+
+如果这个项目对你有帮助，欢迎：
+- ⭐ 给项目点个 Star
+- 🐛 提交 Bug 报告
+- 💡 提出新功能建议
+- 📖 完善项目文档
 
 ---
 
@@ -277,6 +312,8 @@
 **用心设计，用色彩点亮生活** 🎨
 
 Made with ❤️ for HarmonyOS
+
+[⬆ 回到顶部](#-拾色师---专业配色设计平台)
 
 </div>
 
