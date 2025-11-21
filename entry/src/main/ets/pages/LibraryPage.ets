@@ -2895,6 +2895,10 @@ export struct LibraryPage {
           this.showAdjustDialog(scheme);
         })
 
+        this.buildGlassActionButton($r('app.media.ic_public_copy'), '复制', () => {
+          this.duplicateScheme(scheme);
+        })
+
         this.buildGlassActionButton($r('app.media.ic_public_highlights'), '生成', () => {
           this.showGeneratorDialog(scheme);
         })
@@ -2989,6 +2993,48 @@ export struct LibraryPage {
     } finally {
       this.isLoading = false;
       console.info('加载配色方案完成');
+    }
+  }
+
+  /**
+   * 复制配色方案
+   */
+  async duplicateScheme(scheme: ColorScheme) {
+    try {
+      // 创建副本
+      const duplicatedScheme: ColorScheme = {
+        id: 0, // 新ID将由数据库自动生成
+        name: scheme.name + ' (副本)',
+        colors: [...scheme.colors], // 深拷贝颜色数组
+        tags: [...scheme.tags], // 深拷贝标签数组
+        isFavorite: false, // 副本默认不收藏
+        createdTime: Date.now(),
+        source: scheme.source
+      };
+
+      // 保存到数据库
+      const newId = await DatabaseManager.getInstance().insertColorScheme(duplicatedScheme);
+
+      if (newId > 0) {
+        promptAction.showToast({
+          message: '配色方案已复制',
+          duration: 2000
+        });
+
+        // 重新加载列表
+        await this.loadColorSchemes();
+      } else {
+        promptAction.showToast({
+          message: '复制失败，请重试',
+          duration: 2000
+        });
+      }
+    } catch (err) {
+      console.error('复制配色方案失败: ' + JSON.stringify(err));
+      promptAction.showToast({
+        message: '复制失败: ' + err,
+        duration: 2000
+      });
     }
   }
 

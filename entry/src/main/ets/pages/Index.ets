@@ -248,6 +248,9 @@ struct Index {
   @State extractionAlgorithm: ColorExtractionAlgorithm = 'kmeans'; // 'median-cut' | 'kmeans'
   private maxManualColors: number = 8; // 最多选择8个颜色
 
+  // 最近使用的配色
+  @State recentSchemes: ColorScheme[] = [];
+
   // 保存对话框控制器
   saveDialogController: CustomDialogController = new CustomDialogController({
     builder: SaveSchemeDialog({
@@ -268,6 +271,25 @@ struct Index {
     const isFirst = await PreferencesManager.getInstance().isFirstLaunch();
     if (isFirst) {
       this.showGuide = true;
+    }
+
+    // 加载最近使用的配色方案
+    await this.loadRecentSchemes();
+  }
+
+  /**
+   * 加载最近使用的配色方案
+   */
+  async loadRecentSchemes() {
+    try {
+      const allSchemes = await DatabaseManager.getInstance().getAllColorSchemes();
+      // 按创建时间倒序排序，取前3个
+      this.recentSchemes = allSchemes
+        .sort((a, b) => b.createdTime - a.createdTime)
+        .slice(0, 3);
+      console.info('加载了 ' + this.recentSchemes.length + ' 个最近使用的配色方案');
+    } catch (err) {
+      console.error('加载最近使用失败: ' + JSON.stringify(err));
     }
   }
 
@@ -426,6 +448,11 @@ struct Index {
       // 主内容区
       Scroll() {
         Column() {
+          // 最近使用的配色（仅在未选择图片时显示）
+          if (this.recentSchemes.length > 0 && !this.selectedImageUri) {
+            this.buildRecentSchemesSection();
+          }
+
           // 选择图片按钮
           if (!this.selectedImageUri) {
             this.buildSelectImageButton();
@@ -1413,6 +1440,85 @@ struct Index {
         duration: 1500
       });
     }
+  }
+
+  // 最近使用的配色区域
+  @Builder
+  buildRecentSchemesSection() {
+    Column() {
+      Row() {
+        Text('最近使用')
+          .fontSize(16)
+          .fontWeight(FontWeight.Medium)
+          .fontColor(ThemeColors.textPrimary)
+
+        Blank()
+
+        Text('查看全部 >')
+          .fontSize(14)
+          .fontColor(ThemeColors.primary)
+          .onClick(() => {
+            this.currentTabIndex = 1; // 跳转到配色库
+          })
+      }
+      .width('100%')
+      .margin({ bottom: 12 })
+
+      // 配色方案列表
+      Scroll() {
+        Row({ space: 12 }) {
+          ForEach(this.recentSchemes, (scheme: ColorScheme) => {
+            this.buildRecentSchemeCard(scheme);
+          })
+        }
+      }
+      .scrollable(ScrollDirection.Horizontal)
+      .scrollBar(BarState.Off)
+      .width('100%')
+    }
+    .width('100%')
+    .padding({ bottom: 20 })
+  }
+
+  // 最近使用的配色卡片
+  @Builder
+  buildRecentSchemeCard(scheme: ColorScheme) {
+    Column() {
+      // 颜色条
+      Row() {
+        ForEach(scheme.colors, (color: string) => {
+          Row()
+            .width(`${100 / scheme.colors.length}%`)
+            .height(60)
+            .backgroundColor(color)
+        })
+      }
+      .width('100%')
+      .borderRadius(12)
+      .clip(true)
+
+      // 名称
+      Text(scheme.name)
+        .fontSize(14)
+        .fontColor(ThemeColors.textPrimary)
+        .maxLines(1)
+        .textOverflow({ overflow: TextOverflow.Ellipsis })
+        .margin({ top: 8 })
+    }
+    .width(150)
+    .onClick(() => {
+      // 应用到当前提取结果
+      this.extractedColors = scheme.colors.map((color, index) => ({
+        hex: color,
+        rgb: this.hexToRgb(color),
+        percentage: 100 / scheme.colors.length
+      }));
+
+      promptAction.showToast({
+        message: '已应用配色方案',
+        duration: 1500
+      });
+    })
   }
 
   // 提取颜色
