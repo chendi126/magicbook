@@ -1511,9 +1511,10 @@ struct Index {
       // 应用到当前提取结果
       this.extractedColors = scheme.colors.map((color: string, index: number): ColorInfo => {
         const rgb = ColorFormatUtils.hexToRgb(color);
+        const rgbString = `${rgb.r}, ${rgb.g}, ${rgb.b}`;
         return {
           hex: color,
-          rgb: rgb,
+          rgb: rgbString,
           percentage: 100 / scheme.colors.length
         };
       });
