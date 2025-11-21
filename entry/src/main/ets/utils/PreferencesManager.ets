@@ -127,6 +127,40 @@ export class PreferencesManager {
     await this.setSetting('userName', name);
   }
 
+  /**
+   * 获取颜色格式偏好
+   * @returns 颜色格式 ('HEX' | 'RGB' | 'HSL')
+   */
+  async getColorFormat(): Promise<string> {
+    if (!this.preferences) {
+      return 'HEX';
+    }
+    try {
+      const format = await this.preferences.get('colorFormat', 'HEX');
+      return format as string;
+    } catch (err) {
+      console.error('获取颜色格式偏好失败: ' + JSON.stringify(err));
+      return 'HEX';
+    }
+  }
+
+  /**
+   * 设置颜色格式偏好
+   * @param format 颜色格式 ('HEX' | 'RGB' | 'HSL')
+   */
+  async setColorFormat(format: string): Promise<void> {
+    if (!this.preferences) {
+      return;
+    }
+    try {
+      await this.preferences.put('colorFormat', format);
+      await this.preferences.flush();
+      console.info('颜色格式偏好已设置为: ' + format);
+    } catch (err) {
+      console.error('设置颜色格式偏好失败: ' + JSON.stringify(err));
+    }
+  }
+
   // 清除所有设置
   async clear(): Promise<void> {
     if (!this.preferences) {

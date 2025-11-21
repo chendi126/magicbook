@@ -19,6 +19,7 @@ import { LoadingOverlay } from '../components/LoadingState';
 import { PreferencesManager } from '../utils/PreferencesManager';
 import { ThemeColors } from '../utils/ThemeColors';
 import { TABBAR_ANIMATION } from '../utils/AnimationUtils';
+import { ColorFormatUtils } from '../utils/ColorFormatUtils';
 
 
 // 保存配色方案对话框
@@ -285,7 +286,7 @@ struct Index {
       const allSchemes = await DatabaseManager.getInstance().getAllColorSchemes();
       // 按创建时间倒序排序，取前3个
       this.recentSchemes = allSchemes
-        .sort((a, b) => b.createdTime - a.createdTime)
+        .sort((a, b) => b.createTime - a.createTime)
         .slice(0, 3);
       console.info('加载了 ' + this.recentSchemes.length + ' 个最近使用的配色方案');
     } catch (err) {
@@ -1508,11 +1509,14 @@ struct Index {
     .width(150)
     .onClick(() => {
       // 应用到当前提取结果
-      this.extractedColors = scheme.colors.map((color, index) => ({
-        hex: color,
-        rgb: this.hexToRgb(color),
-        percentage: 100 / scheme.colors.length
-      }));
+      this.extractedColors = scheme.colors.map((color: string, index: number): ColorInfo => {
+        const rgb = ColorFormatUtils.hexToRgb(color);
+        return {
+          hex: color,
+          rgb: rgb,
+          percentage: 100 / scheme.colors.length
+        };
+      });
 
       promptAction.showToast({
         message: '已应用配色方案',

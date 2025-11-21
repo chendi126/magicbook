@@ -3003,17 +3003,17 @@ export struct LibraryPage {
     try {
       // 创建副本
       const duplicatedScheme: ColorScheme = {
-        id: 0, // 新ID将由数据库自动生成
         name: scheme.name + ' (副本)',
         colors: [...scheme.colors], // 深拷贝颜色数组
-        tags: [...scheme.tags], // 深拷贝标签数组
+        tags: scheme.tags, // 保持标签字符串
         isFavorite: false, // 副本默认不收藏
-        createdTime: Date.now(),
-        source: scheme.source
+        createTime: Date.now(),
+        imagePath: scheme.imagePath,
+        group: scheme.group
       };
 
       // 保存到数据库
-      const newId = await DatabaseManager.getInstance().insertColorScheme(duplicatedScheme);
+      const newId = await DatabaseManager.getInstance().saveColorScheme(duplicatedScheme);
 
       if (newId > 0) {
         promptAction.showToast({
