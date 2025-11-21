@@ -12,12 +12,337 @@ import { LoadingState } from '../components/LoadingState';
 import { ThemeColors } from '../utils/ThemeColors';
 import { GlassCard, ColorfulGlassCard } from '../components/GlassCard';
 import { ColorCircle, OverlappingColorCircles, PrimaryColorDisplay } from '../components/ColorCircle';
+import { ColorAnalyzer, ColorEmotionAnalysis, ContrastCheckResult } from '../utils/ColorAnalyzer';
+import { ColorCompareDialog } from '../components/ColorCompareDialog';
 
 // 列表项接口（用于 UI 预览）
 interface ListItemData {
   title: string;
   subtitle: string;
   color: number;
+}
+
+// 配色分析对话框
+@CustomDialog
+struct ColorAnalysisDialog {
+  controller: CustomDialogController = new CustomDialogController({
+    builder: ColorAnalysisDialog()
+  });
+  scheme: ColorScheme = { name: '', colors: [], createTime: 0 };
+  @State analysis: ColorEmotionAnalysis | null = null;
+  @State showContrast: boolean = false;
+  @State contrastResults: ContrastCheckResult[] = [];
+
+  aboutToAppear() {
+    this.performAnalysis();
+  }
+
+  performAnalysis() {
+    // 执行情感分析
+    this.analysis = ColorAnalyzer.analyzeColorEmotion(this.scheme.colors);
+
+    // 检查对比度（检查第一个颜色与其他颜色的对比度）
+    if (this.scheme.colors.length >= 2) {
+      this.contrastResults = [];
+      const baseColor = this.scheme.colors[0];
+      for (let i = 1; i < this.scheme.colors.length; i++) {
+        const result = ColorAnalyzer.checkContrast(baseColor, this.scheme.colors[i]);
+        this.contrastResults.push(result);
+      }
+    }
+  }
+
+  build() {
+    Column() {
+      // 标题
+      Row() {
+        Text('配色分析报告')
+          .fontSize(20)
+          .fontWeight(FontWeight.Bold)
+          .fontColor(ThemeColors.textPrimary)
+          .layoutWeight(1)
+
+        Text('×')
+          .fontSize(28)
+          .fontColor(ThemeColors.textTertiary)
+          .onClick(() => {
+            this.controller.close();
+          })
+      }
+      .width('100%')
+      .margin({ bottom: 16 })
+
+      Scroll() {
+        Column() {
+          // 配色预览
+          Column() {
+            Text(this.scheme.name)
+              .fontSize(16)
+              .fontWeight(FontWeight.Medium)
+              .fontColor(ThemeColors.textPrimary)
+              .margin({ bottom: 8 })
+
+            Row() {
+              ForEach(this.scheme.colors, (color: string) => {
+                Column()
+                  .backgroundColor(color)
+                  .layoutWeight(1)
+                  .height(60)
+              })
+            }
+            .width('100%')
+            .borderRadius(12)
+            .clip(true)
+            .shadow({
+              radius: 8,
+              color: ThemeColors.shadowLight,
+              offsetY: 2
+            })
+          }
+          .width('100%')
+          .padding(16)
+          .backgroundColor(ThemeColors.backgroundCard)
+          .borderRadius(12)
+          .margin({ bottom: 16 })
+
+          if (this.analysis) {
+            // 情感分析部分
+            Column() {
+              Text('情感特征分析')
+                .fontSize(16)
+                .fontWeight(FontWeight.Bold)
+                .fontColor(ThemeColors.textPrimary)
+                .alignSelf(ItemAlign.Start)
+                .margin({ bottom: 12 })
+
+              // 评分指标
+              this.buildScoreItem('温暖度', this.analysis.warmth, ThemeColors.warning,
+                this.analysis.warmth >= 70 ? '偏暖色调' : this.analysis.warmth <= 30 ? '偏冷色调' : '中性色调');
+              this.buildScoreItem('活力度', this.analysis.energy, ThemeColors.error,
+                this.analysis.energy >= 70 ? '充满活力' : this.analysis.energy <= 30 ? '沉稳柔和' : '适中平衡');
+              this.buildScoreItem('专业度', this.analysis.professionalism, ThemeColors.primary,
+                this.analysis.professionalism >= 70 ? '专业可靠' : '创意自由');
+              this.buildScoreItem('和谐度', this.analysis.harmony, ThemeColors.success,
+                this.analysis.harmony >= 85 ? '非常和谐' : this.analysis.harmony >= 70 ? '较为和谐' : '对比强烈');
+
+              // 情感标签
+              if (this.analysis.emotionTags.length > 0) {
+                Column() {
+                  Text('情感标签')
+                    .fontSize(14)
+                    .fontColor(ThemeColors.textTertiary)
+                    .alignSelf(ItemAlign.Start)
+                    .margin({ bottom: 8, top: 12 })
+
+                  Flex({ wrap: FlexWrap.Wrap }) {
+                    ForEach(this.analysis.emotionTags, (tag: string) => {
+                      Text(tag)
+                        .fontSize(13)
+                        .fontColor(ThemeColors.primary)
+                        .backgroundColor(ThemeColors.primaryLight)
+                        .padding({ left: 12, right: 12, top: 6, bottom: 6 })
+                        .borderRadius(12)
+                        .margin({ right: 6, bottom: 6 })
+                    })
+                  }
+                }
+                .width('100%')
+              }
+
+              // 适用场景
+              if (this.analysis.suitableScenes.length > 0) {
+                Column() {
+                  Text('推荐应用场景')
+                    .fontSize(14)
+                    .fontColor(ThemeColors.textTertiary)
+                    .alignSelf(ItemAlign.Start)
+                    .margin({ bottom: 8, top: 12 })
+
+                  Flex({ wrap: FlexWrap.Wrap }) {
+                    ForEach(this.analysis.suitableScenes, (scene: string) => {
+                      Text(scene)
+                        .fontSize(13)
+                        .fontColor(ThemeColors.success)
+                        .backgroundColor(ThemeColors.successLight)
+                        .padding({ left: 12, right: 12, top: 6, bottom: 6 })
+                        .borderRadius(12)
+                        .margin({ right: 6, bottom: 6 })
+                    })
+                  }
+                }
+                .width('100%')
+              }
+            }
+            .width('100%')
+            .padding(16)
+            .backgroundColor(ThemeColors.backgroundCard)
+            .borderRadius(12)
+            .margin({ bottom: 16 })
+
+            // 可访问性检查
+            if (this.contrastResults.length > 0) {
+              Column() {
+                Text('可访问性检查')
+                  .fontSize(16)
+                  .fontWeight(FontWeight.Bold)
+                  .fontColor(ThemeColors.textPrimary)
+                  .alignSelf(ItemAlign.Start)
+                  .margin({ bottom: 12 })
+
+                Text(`基准颜色：${this.scheme.colors[0]}`)
+                  .fontSize(13)
+                  .fontColor(ThemeColors.textTertiary)
+                  .alignSelf(ItemAlign.Start)
+                  .margin({ bottom: 12 })
+
+                ForEach(this.contrastResults, (result: ContrastCheckResult, index: number) => {
+                  this.buildContrastItem(this.scheme.colors[index + 1], result);
+                })
+              }
+              .width('100%')
+              .padding(16)
+              .backgroundColor(ThemeColors.backgroundCard)
+              .borderRadius(12)
+            }
+          }
+        }
+        .width('100%')
+      }
+      .layoutWeight(1)
+      .scrollBar(BarState.Auto)
+
+      // 关闭按钮
+      Button('关闭')
+        .width('100%')
+        .height(48)
+        .fontSize(16)
+        .fontWeight(FontWeight.Bold)
+        .backgroundColor(ThemeColors.primary)
+        .borderRadius(24)
+        .margin({ top: 16 })
+        .onClick(() => {
+          this.controller.close();
+        })
+    }
+    .width('90%')
+    .constraintSize({ maxHeight: '85%' })
+    .padding(20)
+    .backgroundColor(ThemeColors.background)
+    .borderRadius(16)
+    .shadow({
+      radius: 20,
+      color: ThemeColors.shadowMedium,
+      offsetY: 10
+    })
+  }
+
+  @Builder
+  buildScoreItem(label: string, score: number, color: string, description: string) {
+    Column() {
+      Row() {
+        Text(label)
+          .fontSize(14)
+          .fontColor(ThemeColors.textSecondary)
+          .layoutWeight(1)
+
+        Text(`${score}`)
+          .fontSize(16)
+          .fontWeight(FontWeight.Bold)
+          .fontColor(color)
+      }
+      .width('100%')
+      .margin({ bottom: 4 })
+
+      // 进度条
+      Row() {
+        Row()
+          .width(`${score}%`)
+          .height('100%')
+          .backgroundColor(color)
+          .borderRadius(4)
+      }
+      .width('100%')
+      .height(8)
+      .backgroundColor(ThemeColors.backgroundInput)
+      .borderRadius(4)
+      .margin({ bottom: 4 })
+
+      Text(description)
+        .fontSize(12)
+        .fontColor(ThemeColors.textPlaceholder)
+        .alignSelf(ItemAlign.Start)
+    }
+    .width('100%')
+    .margin({ bottom: 12 })
+  }
+
+  @Builder
+  buildContrastItem(color: string, result: ContrastCheckResult) {
+    Row() {
+      // 颜色块
+      Column()
+        .width(40)
+        .height(40)
+        .backgroundColor(color)
+        .borderRadius(8)
+        .margin({ right: 12 })
+
+      // 对比度信息
+      Column({ space: 4 }) {
+        Text(color)
+          .fontSize(13)
+          .fontColor(ThemeColors.textSecondary)
+          .fontFamily('monospace')
+
+        Row({ space: 8 }) {
+          Text(`对比度: ${result.ratio}:1`)
+            .fontSize(12)
+            .fontColor(ThemeColors.textTertiary)
+
+          Text(result.level === 'excellent' ? '优秀' :
+            result.level === 'good' ? '良好' :
+            result.level === 'fair' ? '一般' : '较差')
+            .fontSize(12)
+            .fontColor(result.level === 'excellent' || result.level === 'good' ?
+              ThemeColors.success : ThemeColors.warning)
+            .backgroundColor(result.level === 'excellent' || result.level === 'good' ?
+              ThemeColors.successLight : ThemeColors.warningLight)
+            .padding({ left: 8, right: 8, top: 2, bottom: 2 })
+            .borderRadius(8)
+        }
+      }
+      .alignItems(HorizontalAlign.Start)
+      .layoutWeight(1)
+
+      // WCAG 标准
+      Column({ space: 4 }) {
+        Row() {
+          Text(result.wcagAA ? '✓' : '✗')
+            .fontSize(14)
+            .fontColor(result.wcagAA ? ThemeColors.success : ThemeColors.error)
+            .margin({ right: 4 })
+          Text('AA')
+            .fontSize(12)
+            .fontColor(ThemeColors.textTertiary)
+        }
+
+        Row() {
+          Text(result.wcagAAA ? '✓' : '✗')
+            .fontSize(14)
+            .fontColor(result.wcagAAA ? ThemeColors.success : ThemeColors.error)
+            .margin({ right: 4 })
+          Text('AAA')
+            .fontSize(12)
+            .fontColor(ThemeColors.textTertiary)
+        }
+      }
+    }
+    .width('100%')
+    .padding(12)
+    .backgroundColor(ThemeColors.backgroundInput)
+    .borderRadius(8)
+    .margin({ bottom: 8 })
+  }
 }
 
 // 导出对话框
@@ -1935,6 +2260,22 @@ export struct LibraryPage {
     customStyle: true
   })
 
+  // 配色分析对话框控制器
+  analysisDialogController: CustomDialogController = new CustomDialogController({
+    builder: ColorAnalysisDialog({ scheme: { name: '', colors: [], createTime: 0 } }),
+    alignment: DialogAlignment.Center,
+    autoCancel: true,
+    customStyle: true
+  })
+
+  // 配色对比对话框控制器
+  compareDialogController: CustomDialogController = new CustomDialogController({
+    builder: ColorCompareDialog({ allSchemes: [] }),
+    alignment: DialogAlignment.Center,
+    autoCancel: true,
+    customStyle: true
+  })
+
   aboutToAppear() {
     console.info('LibraryPage aboutToAppear');
     this.loadColorSchemes();
@@ -2008,6 +2349,37 @@ export struct LibraryPage {
       customStyle: true
     });
     this.shareDialogController.open();
+  }
+
+  // 显示配色分析对话框
+  showAnalysisDialog(scheme: ColorScheme) {
+    this.analysisDialogController = new CustomDialogController({
+      builder: ColorAnalysisDialog({
+        scheme: scheme
+      }),
+      alignment: DialogAlignment.Center,
+      autoCancel: true,
+      customStyle: true
+    });
+    this.analysisDialogController.open();
+  }
+
+  // 显示配色对比对话框
+  showCompareDialog() {
+    if (this.filteredSchemes.length < 2) {
+      promptAction.showToast({ message: '至少需要2个配色方案才能对比', duration: 1500 });
+      return;
+    }
+
+    this.compareDialogController = new CustomDialogController({
+      builder: ColorCompareDialog({
+        allSchemes: this.filteredSchemes
+      }),
+      alignment: DialogAlignment.Center,
+      autoCancel: true,
+      customStyle: true
+    });
+    this.compareDialogController.open();
   }
 
   // 保存生成的配色方案
@@ -2188,6 +2560,28 @@ export struct LibraryPage {
         Text('配色库')
           .fontSize(24)
           .fontWeight(FontWeight.Bold)
+          .layoutWeight(1)
+
+        // 对比按钮
+        Button({ type: ButtonType.Normal }) {
+          Row() {
+            Image($r('app.media.ic_public_highlights'))
+              .width(18)
+              .height(18)
+              .fillColor(ThemeColors.primary)
+              .margin({ right: 4 })
+            Text('对比')
+              .fontSize(14)
+              .fontColor(ThemeColors.primary)
+          }
+        }
+        .height(36)
+        .backgroundColor(ThemeColors.primaryLight)
+        .borderRadius(18)
+        .padding({ left: 14, right: 14 })
+        .onClick(() => {
+          this.showCompareDialog();
+        })
       }
       .width('100%')
       .padding({ left: 16, right: 16, top: 16, bottom: 8 })
@@ -2507,6 +2901,10 @@ export struct LibraryPage {
 
         this.buildGlassActionButton($r('app.media.ic_public_save'), '导出', () => {
           this.showExportDialog(scheme);
+        })
+
+        this.buildGlassActionButton($r('app.media.ic_public_detail'), '分析', () => {
+          this.showAnalysisDialog(scheme);
         })
 
         this.buildGlassActionButton($r('app.media.ic_message_forwarding'), '分享', () => {

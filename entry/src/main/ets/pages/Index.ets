@@ -1,6 +1,8 @@
 import { LibraryPage } from './LibraryPage';
 import { MinePage } from './MinePage';
 import { InspirationPage } from './InspirationPage';
+import { ColorLabPage } from './ColorLabPage';
+import { LearningCenterPage } from './LearningCenterPage';
 import picker from '@ohos.file.picker';
 import { ColorInfo } from '../models/ColorInfo';
 import { ColorExtractor, ColorExtractionAlgorithm } from '../utils/ColorExtractor';
@@ -294,17 +296,29 @@ struct Index {
         }
         .tabBar(this.buildTabBarItem('配色库', 1, $r('app.media.ic_public_folder')))
 
+        // 配色实验室
+        TabContent() {
+          ColorLabPage();
+        }
+        .tabBar(this.buildTabBarItem('实验室', 2, $r('app.media.ic_gallery_free')))
+
         // 灵感广场
         TabContent() {
           InspirationPage();
         }
-        .tabBar(this.buildTabBarItem('灵感', 2, $r('app.media.ic_public_favor')))
+        .tabBar(this.buildTabBarItem('灵感', 3, $r('app.media.ic_public_favor')))
+
+        // 学习中心
+        TabContent() {
+          LearningCenterPage();
+        }
+        .tabBar(this.buildTabBarItem('学习', 4, $r('app.media.ic_public_help')))
 
         // 我的
         TabContent() {
           MinePage();
         }
-        .tabBar(this.buildTabBarItem('我的', 3, $r('app.media.ic_public_settings')))
+        .tabBar(this.buildTabBarItem('我的', 5, $r('app.media.ic_public_settings')))
       }
       .barPosition(BarPosition.End)
       .onChange((index: number) => {
