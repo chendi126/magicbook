@@ -413,7 +413,7 @@ export struct ColorLabPage {
   buildAnalysisPanel() {
     Column() {
       Row() {
-        Text('AI 色彩分析')
+        Text('色彩分析')
           .fontSize(18)
           .fontWeight(FontWeight.Bold)
           .fontColor(ThemeColors.textPrimary)

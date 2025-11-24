@@ -98,7 +98,7 @@ export struct MoodBoardPage {
           Row({ space: 4 }) {
             Text('切换配色')
               .fontSize(14)
-              .fontColor(Color.White)
+              .fontColor('#FFFFFF')
             Text('🎨')
               .fontSize(14)
           }
@@ -150,7 +150,7 @@ export struct MoodBoardPage {
           
           Button('去创建')
             .backgroundColor(ThemeColors.primary)
-            .fontColor(Color.White)
+            .fontColor('#FFFFFF')
             .height(40)
             .width(120)
             .onClick(() => {
@@ -216,7 +216,7 @@ export struct MoodBoardPage {
       }
       .width('100%')
       .padding(16)
-      .backgroundColor(Color.White)
+      .backgroundColor(ThemeColors.backgroundCard)
     }
     .width('100%')
     .borderRadius(16)
@@ -256,7 +256,7 @@ export struct MoodBoardPage {
         ForEach(this.selectedScheme!.colors, (color: string) => {
           Circle({ width: 36, height: 36 })
             .fill(color)
-            .stroke(Color.White)
+            .stroke(ThemeColors.background)
             .strokeWidth(2)
             .shadow({
               radius: 4,
@@ -283,7 +283,7 @@ export struct MoodBoardPage {
     }
     .width('90%')
     .height(56)
-    .backgroundColor(Color.White)
+    .backgroundColor(ThemeColors.backgroundCard)
     .borderRadius(28)
     .shadow({
       radius: 16,
@@ -353,7 +353,7 @@ export struct MoodBoardPage {
         }
         .width('100%')
         .padding(24)
-        .backgroundColor(Color.White)
+        .backgroundColor(ThemeColors.backgroundCard)
         .borderRadius(24)
         .shadow({
           radius: 12,
@@ -381,7 +381,7 @@ export struct MoodBoardPage {
         }
         .width('100%')
         .padding(24)
-        .backgroundColor(Color.White)
+        .backgroundColor(ThemeColors.backgroundCard)
         .borderRadius(24)
         .alignItems(HorizontalAlign.Start)
         .shadow({
@@ -409,7 +409,7 @@ export struct MoodBoardPage {
         }
         .width('100%')
         .padding(24)
-        .backgroundColor(Color.White)
+        .backgroundColor(ThemeColors.backgroundCard)
         .borderRadius(24)
         .alignItems(HorizontalAlign.Start)
         .shadow({
@@ -446,7 +446,7 @@ export struct MoodBoardPage {
         }
         .width('100%')
         .padding(24)
-        .backgroundColor(Color.White)
+        .backgroundColor(ThemeColors.backgroundCard)
         .borderRadius(24)
         .alignItems(HorizontalAlign.Start)
         .shadow({
@@ -586,7 +586,7 @@ export struct MoodBoardPage {
     }
     .width('100%')
     .padding(20)
-    .backgroundColor(Color.White)
+    .backgroundColor(ThemeColors.backgroundCard)
     .borderRadius(24)
     .shadow({
       radius: 12,
@@ -697,7 +697,7 @@ export struct MoodBoardPage {
       
       Button('写日记')
         .backgroundColor(ThemeColors.primary)
-        .fontColor(Color.White)
+        .fontColor('#FFFFFF')
         .height(40)
         .width(120)
         .margin({ top: 16 })
@@ -792,7 +792,7 @@ export struct MoodBoardPage {
           ForEach(diary.colorScheme.colors, (color: string) => {
             Circle({ width: 16, height: 16 })
               .fill(color)
-              .stroke(Color.White)
+              .stroke(ThemeColors.background)
               .strokeWidth(1.5)
           })
         }
@@ -825,7 +825,7 @@ export struct MoodBoardPage {
     }
     .width('100%')
     .padding(20)
-    .backgroundColor(Color.White)
+    .backgroundColor(ThemeColors.backgroundCard)
     .borderRadius(20)
     .shadow({
       radius: 10,
@@ -843,7 +843,7 @@ export struct MoodBoardPage {
         Image($r('app.media.ic_public_edit')) // Assuming icon exists, fallback to text if needed
           .width(24)
           .height(24)
-          .fillColor(Color.White)
+          .fillColor('#FFFFFF')
       }
       .width(48)
       .height(48)
@@ -858,7 +858,7 @@ export struct MoodBoardPage {
         Image($r('app.media.ic_public_delete')) // Assuming icon exists
           .width(24)
           .height(24)
-          .fillColor(Color.White)
+          .fillColor('#FFFFFF')
       }
       .width(48)
       .height(48)
@@ -906,12 +906,12 @@ export struct MoodBoardPage {
       Text(`${count}`)
         .fontSize(14)
         .fontWeight(FontWeight.Bold)
-        .fontColor(this.filterMood === mood ? Color.White : ThemeColors.textPrimary)
+        .fontColor(this.filterMood === mood ? '#FFFFFF' : ThemeColors.textPrimary)
     }
     .width(64)
     .height(72)
     .justifyContent(FlexAlign.Center)
-    .backgroundColor(this.filterMood === mood ? ThemeColors.primary : Color.White)
+    .backgroundColor(this.filterMood === mood ? ThemeColors.primary : ThemeColors.backgroundCard)
     .borderRadius(20)
     .shadow({
       radius: 8,

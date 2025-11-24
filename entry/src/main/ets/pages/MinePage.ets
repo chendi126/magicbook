@@ -466,7 +466,7 @@ export struct MinePage {
         .width('100%')
         .height(44)
         .fontSize(16)
-        .fontColor(Color.White)
+        .fontColor('#FFFFFF')
         .backgroundColor(ThemeColors.primary)
         .borderRadius(8)
         .margin({ top: 16 })
@@ -532,7 +532,7 @@ export struct MinePage {
         Image(icon)
           .width(24)
           .height(24)
-          .fillColor(this.currentThemeMode === mode ? Color.White : ThemeColors.textSecondary)
+          .fillColor(this.currentThemeMode === mode ? '#FFFFFF' : ThemeColors.textSecondary)
       }
       .width(48)
       .height(48)
@@ -562,7 +562,7 @@ export struct MinePage {
           Image($r('app.media.ic_public_ok_filled'))
             .width(20)
             .height(20)
-            .fillColor(Color.White)
+            .fillColor('#FFFFFF')
         }
         .width(28)
         .height(28)

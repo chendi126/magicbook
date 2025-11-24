@@ -663,14 +663,14 @@ struct ExportDialog {
       }
       .width('100%')
       .padding(12)
-      .backgroundColor('#F9F9F9')
+      .backgroundColor(ThemeColors.backgroundCard)
       .borderRadius(8)
       .margin({ bottom: 16 })
 
       // 格式选择
       Text('选择导出格式')
         .fontSize(14)
-        .fontColor('#666666')
+        .fontColor(ThemeColors.textSecondary)
         .alignSelf(ItemAlign.Start)
         .margin({ bottom: 8 })
 
@@ -682,10 +682,10 @@ struct ExportDialog {
               .margin({ right: 4 })
             Text(format.name)
               .fontSize(14)
-              .fontColor(this.selectedFormat === format.type ? '#FFFFFF' : '#333333')
+              .fontColor(this.selectedFormat === format.type ? '#FFFFFF' : ThemeColors.textPrimary)
           }
           .padding({ left: 12, right: 12, top: 8, bottom: 8 })
-          .backgroundColor(this.selectedFormat === format.type ? '#007AFF' : '#F0F0F0')
+          .backgroundColor(this.selectedFormat === format.type ? ThemeColors.primary : ThemeColors.backgroundInput)
           .borderRadius(16)
           .margin({ right: 8, bottom: 8 })
           .onClick(() => {
@@ -700,18 +700,18 @@ struct ExportDialog {
       // 代码预览
       Text('代码预览')
         .fontSize(14)
-        .fontColor('#666666')
+        .fontColor(ThemeColors.textSecondary)
         .alignSelf(ItemAlign.Start)
         .margin({ bottom: 8 })
 
       Scroll() {
         Text(this.exportedCode)
           .fontSize(12)
-          .fontColor('#333333')
+          .fontColor(ThemeColors.textPrimary)
           .fontFamily('monospace')
           .width('100%')
           .padding(12)
-          .backgroundColor('#F5F5F5')
+          .backgroundColor(ThemeColors.backgroundSecondary)
           .borderRadius(8)
       }
       .width('100%')
@@ -722,8 +722,8 @@ struct ExportDialog {
       Row() {
         Button('取消')
           .fontSize(16)
-          .backgroundColor('#F0F0F0')
-          .fontColor('#333333')
+          .backgroundColor(ThemeColors.backgroundInput)
+          .fontColor(ThemeColors.textPrimary)
           .layoutWeight(1)
           .margin({ right: 8 })
           .onClick(() => {
@@ -732,7 +732,7 @@ struct ExportDialog {
 
         Button('复制代码')
           .fontSize(16)
-          .backgroundColor('#007AFF')
+          .backgroundColor(ThemeColors.primary)
           .layoutWeight(1)
           .margin({ left: 8 })
           .onClick(() => {
@@ -744,7 +744,7 @@ struct ExportDialog {
     .width('85%')
     .constraintSize({ maxHeight: '80%' })
     .padding(20)
-    .backgroundColor('#FFFFFF')
+    .backgroundColor(ThemeColors.background)
     .borderRadius(12)
   }
 }
@@ -773,7 +773,7 @@ struct ShareDialog {
     }
     .id(`shareCard_${this.cardStyle}`) // 添加ID用于截图
     .width('100%')
-    .backgroundColor('#FFFFFF')
+    .backgroundColor(ThemeColors.backgroundCard)
     .borderRadius(12)
     .padding(20)
   }
@@ -790,7 +790,7 @@ struct ShareDialog {
 
       Text(`${this.scheme.colors.length} 种颜色`)
         .fontSize(14)
-        .fontColor('#999999')
+        .fontColor(ThemeColors.textPlaceholder)
         .margin({ bottom: 20 })
 
       // 颜色条（大块）
@@ -809,13 +809,13 @@ struct ShareDialog {
             Column() {
               Text(`颜色 ${index + 1}`)
                 .fontSize(14)
-                .fontColor('#666666')
+                .fontColor(ThemeColors.textSecondary)
                 .margin({ bottom: 4 })
 
               Text(color.toUpperCase())
                 .fontSize(16)
                 .fontWeight(FontWeight.Medium)
-                .fontColor('#333333')
+                .fontColor(ThemeColors.textPrimary)
             }
             .alignItems(HorizontalAlign.Start)
             .layoutWeight(1)
@@ -829,7 +829,7 @@ struct ShareDialog {
       // 底部水印
       Text('色彩灵感收集器')
         .fontSize(12)
-        .fontColor('#CCCCCC')
+        .fontColor(ThemeColors.textDisabled)
         .alignSelf(ItemAlign.Center)
     }
     .width('100%')
@@ -849,7 +849,7 @@ struct ShareDialog {
 
         Text(`${this.scheme.colors.length} Colors`)
           .fontSize(12)
-          .fontColor('#999999')
+          .fontColor(ThemeColors.textPlaceholder)
       }
       .width('100%')
       .alignItems(HorizontalAlign.Start)
@@ -874,7 +874,7 @@ struct ShareDialog {
         ForEach(this.scheme.colors, (color: string) => {
           Text(color.toUpperCase())
             .fontSize(11)
-            .fontColor('#666666')
+            .fontColor(ThemeColors.textSecondary)
             .fontFamily('monospace')
             .margin({ bottom: 6 })
         })
@@ -885,7 +885,7 @@ struct ShareDialog {
       // 底部
       Text('色彩灵感收集器')
         .fontSize(11)
-        .fontColor('#CCCCCC')
+        .fontColor(ThemeColors.textDisabled)
         .alignSelf(ItemAlign.Center)
     }
     .width('100%')
@@ -920,7 +920,7 @@ struct ShareDialog {
           ForEach(this.scheme.colors, (color: string) => {
             Text(color.toUpperCase())
               .fontSize(12)
-              .fontColor('#666666')
+              .fontColor(ThemeColors.textSecondary)
               .fontFamily('monospace')
           })
         }
@@ -945,14 +945,14 @@ struct ShareDialog {
       Column() {
         Text('卡片样式')
           .fontSize(14)
-          .fontColor('#666666')
+          .fontColor(ThemeColors.textSecondary)
           .margin({ bottom: 8 })
 
         Row({ space: 8 }) {
           Button('现代')
             .fontSize(13)
             .backgroundColor(this.cardStyle === 'modern' ? '#007AFF' : '#F0F0F0')
-            .fontColor(this.cardStyle === 'modern' ? '#FFFFFF' : '#666666')
+            .fontColor(this.cardStyle === 'modern' ? '#FFFFFF' : ThemeColors.textSecondary)
             .padding({ left: 16, right: 16, top: 8, bottom: 8 })
             .onClick(() => {
               this.cardStyle = 'modern';
@@ -961,7 +961,7 @@ struct ShareDialog {
           Button('经典')
             .fontSize(13)
             .backgroundColor(this.cardStyle === 'classic' ? '#007AFF' : '#F0F0F0')
-            .fontColor(this.cardStyle === 'classic' ? '#FFFFFF' : '#666666')
+            .fontColor(this.cardStyle === 'classic' ? '#FFFFFF' : ThemeColors.textSecondary)
             .padding({ left: 16, right: 16, top: 8, bottom: 8 })
             .onClick(() => {
               this.cardStyle = 'classic';
@@ -970,7 +970,7 @@ struct ShareDialog {
           Button('极简')
             .fontSize(13)
             .backgroundColor(this.cardStyle === 'minimal' ? '#007AFF' : '#F0F0F0')
-            .fontColor(this.cardStyle === 'minimal' ? '#FFFFFF' : '#666666')
+            .fontColor(this.cardStyle === 'minimal' ? '#FFFFFF' : ThemeColors.textSecondary)
             .padding({ left: 16, right: 16, top: 8, bottom: 8 })
             .onClick(() => {
               this.cardStyle = 'minimal';
@@ -987,7 +987,7 @@ struct ShareDialog {
       }
       .width('100%')
       .height(400)
-      .backgroundColor('#F5F5F5')
+      .backgroundColor(ThemeColors.backgroundSecondary)
       .borderRadius(8)
       .padding(16)
       .margin({ bottom: 16 })
@@ -996,8 +996,8 @@ struct ShareDialog {
       Row({ space: 12 }) {
         Button('取消')
           .fontSize(15)
-          .backgroundColor('#F0F0F0')
-          .fontColor('#666666')
+          .backgroundColor(ThemeColors.backgroundInput)
+          .fontColor(ThemeColors.textSecondary)
           .layoutWeight(1)
           .onClick(() => {
             this.controller.close();
@@ -1005,7 +1005,7 @@ struct ShareDialog {
 
         Button('保存图片')
           .fontSize(15)
-          .backgroundColor('#34C759')
+          .backgroundColor(ThemeColors.success)
           .fontColor('#FFFFFF')
           .layoutWeight(1)
           .onClick(() => {
@@ -1014,7 +1014,7 @@ struct ShareDialog {
 
         Button('分享')
           .fontSize(15)
-          .backgroundColor('#007AFF')
+          .backgroundColor(ThemeColors.primary)
           .fontColor('#FFFFFF')
           .layoutWeight(1)
           .onClick(() => {
@@ -1025,7 +1025,7 @@ struct ShareDialog {
     }
     .width('90%')
     .padding(20)
-    .backgroundColor('#FFFFFF')
+    .backgroundColor(ThemeColors.background)
     .borderRadius(12)
   }
 
@@ -3156,9 +3156,9 @@ export struct LibraryPage {
       Text(`${scheme.colors.length} 种颜色`)
         .fontSize(12)
         .fontColor(ThemeColors.textTertiary)
-        .margin({ bottom: 10 })
+        .margin({ bottom: 14 })
 
-      // 操作按钮组 - 圆形毛玻璃按钮（第一行）
+      // 操作按钮组 - 第一行
       Row({ space: 8 }) {
         this.buildGlassActionButton($r('app.media.ic_public_detail'), '预览', () => {
           this.showPreviewDialog(scheme);
@@ -3179,7 +3179,12 @@ export struct LibraryPage {
         this.buildGlassActionButton($r('app.media.ic_public_save'), '导出', () => {
           this.showExportDialog(scheme);
         })
+      }
+      .width('100%')
+      .justifyContent(FlexAlign.SpaceBetween)
 
+      // 操作按钮组 - 第二行
+      Row({ space: 8 }) {
         this.buildGlassActionButton($r('app.media.ic_public_detail'), '分析', () => {
           this.showAnalysisDialog(scheme);
         })
@@ -3188,21 +3193,17 @@ export struct LibraryPage {
           this.showShareDialog(scheme);
         })
 
+        this.buildGlassActionButton($r('app.media.ic_public_edit'), '故事', () => {
+          this.showStoryDialog(scheme);
+        })
+
         this.buildGlassActionButton($r('app.media.ic_public_delete'), '删除', () => {
           this.showDeleteConfirm(scheme);
         }, true)
       }
       .width('100%')
-      .justifyContent(FlexAlign.SpaceBetween)
-
-      // 操作按钮组 - 第二行（新增故事按钮）
-      Row({ space: 8 }) {
-        this.buildGlassActionButton($r('app.media.ic_public_edit'), '故事', () => {
-          this.showStoryDialog(scheme);
-        })
-      }
-      .width('100%')
-      .margin({ top: 8 })
+      .justifyContent(FlexAlign.SpaceAround)
+      .margin({ top: 12 })
     }
     .width('100%')
   }

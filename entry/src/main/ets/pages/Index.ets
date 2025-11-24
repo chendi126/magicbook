@@ -380,8 +380,8 @@ struct Index {
         }
         .width(48)
         .height(48)
-        .backgroundColor('rgba(255, 255, 255, 0.9)')
-        .shadow({ radius: 8, color: 'rgba(0, 0, 0, 0.15)', offsetY: 4 })
+        .backgroundColor(ThemeColors.backgroundElevated)
+        .shadow({ radius: 8, color: ThemeColors.shadowLight, offsetY: 4 })
         .position({ x: this.buttonX, y: this.buttonY })
         .onClick(() => {
           animateTo({ duration: 300, curve: Curve.EaseOut }, () => {
