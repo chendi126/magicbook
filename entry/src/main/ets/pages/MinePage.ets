@@ -91,7 +91,7 @@ export struct MinePage {
             .margin({ top: 24, bottom: 12, left: 4 })
 
           // 其他设置项
-          this.buildSettingItem('关于应用', '色彩灵感收集器 v1.0.0', $r('app.media.ic_public_detail'), () => {});
+          this.buildSettingItem('关于应用', '拾色师 v1.0.0', $r('app.media.ic_public_detail'), () => {});
           this.buildHelpSettingItem();
           this.buildFeedbackSettingItem();
           this.buildClickableSettingItem('隐私政策', '查看隐私保护说明', $r('app.media.ic_public_privacy'), () => {
@@ -605,12 +605,13 @@ export struct MinePage {
     Column() {
       Scroll() {
         Column() {
-          this.buildHelpStep('1. 提取色彩', '📸 点击首页"+"按钮，选择照片，应用会自动提取主要色彩');
-          this.buildHelpStep('2. 选择算法', '🎨 支持多种提取算法：主色调、K-Means、中位切分等');
-          this.buildHelpStep('3. 保存方案', '💾 点击保存按钮，为配色方案命名并保存到本地');
-          this.buildHelpStep('4. 管理配色', '📋 在"我的"页面查看、编辑、删除已保存的配色方案');
-          this.buildHelpStep('5. 浏览灵感', '🌈 在"灵感"页面浏览精选配色，点击收藏喜欢的方案');
-          this.buildHelpStep('6. 复制色值', '📋 点击色块可复制色值，支持HEX、RGB等格式');
+          this.buildHelpStep('1. 侧边栏导航', '🎯 点击右上角悬浮按钮打开菜单，访问所有功能。长按可拖动按钮位置');
+          this.buildHelpStep('2. 色彩提取', '📸 在首页选择照片，应用会自动提取主要色彩，支持多种算法');
+          this.buildHelpStep('3. 配色库', '📚 保存和管理你的配色方案，支持搜索、筛选和分组');
+          this.buildHelpStep('4. 情绪日记', '📝 用色彩记录每天的心情，配上天气和笔记');
+          this.buildHelpStep('5. 色彩实验室', '🧪 调整色彩、生成渐变、探索配色规则');
+          this.buildHelpStep('6. UI预览', '🎨 将配色应用到UI设计中，实时预览效果');
+          this.buildHelpStep('7. 灵感广场', '🌈 浏览精选配色方案，一键保存到配色库');
         }
         .width('100%')
       }

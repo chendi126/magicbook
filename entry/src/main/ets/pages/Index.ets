@@ -3,6 +3,8 @@ import { MinePage } from './MinePage';
 import { InspirationPage } from './InspirationPage';
 import { ColorLabPage } from './ColorLabPage';
 import { LearningCenterPage } from './LearningCenterPage';
+import { UIPreviewPage } from './UIPreviewPage';
+import { MoodBoardPage } from './MoodBoardPage';
 import picker from '@ohos.file.picker';
 import { ColorInfo } from '../models/ColorInfo';
 import { ColorExtractor, ColorExtractionAlgorithm } from '../utils/ColorExtractor';
@@ -239,6 +241,11 @@ struct Index {
   @Provide refreshLibrary: number = 0; // 刷新信号
   @State showGuide: boolean = false; // 显示引导
   @State isProcessing: boolean = false; // 处理中状态
+  @State isSidebarOpen: boolean = false; // 侧边栏开启状态
+  @State buttonX: number = 300; // 悬浮按钮 X 坐标
+  @State buttonY: number = 15; // 悬浮按钮 Y 坐标
+  @State dragStartX: number = 0; // 拖拽起始 X 坐标
+  @State dragStartY: number = 0; // 拖拽起始 Y 坐标
 
   // 手动取色相关状态
   @State pickMode: string = 'auto'; // 'auto' 自动提取 | 'manual' 手动取色
@@ -325,39 +332,102 @@ struct Index {
         }
         .tabBar(this.buildTabBarItem('实验室', 2, $r('app.media.ic_gallery_free')))
 
+        // UI 设计预览
+        TabContent() {
+          UIPreviewPage();
+        }
+        .tabBar(this.buildTabBarItem('设计', 3, $r('app.media.ic_public_detail')))
+
         // 灵感广场
         TabContent() {
           InspirationPage();
         }
-        .tabBar(this.buildTabBarItem('灵感', 3, $r('app.media.ic_public_favor')))
+        .tabBar(this.buildTabBarItem('灵感', 4, $r('app.media.ic_public_favor')))
+
+        // 情绪板
+        TabContent() {
+          MoodBoardPage();
+        }
+        .tabBar(this.buildTabBarItem('情绪板', 5, $r('app.media.ic_public_edit')))
 
         // 学习中心
         TabContent() {
           LearningCenterPage();
         }
-        .tabBar(this.buildTabBarItem('学习', 4, $r('app.media.ic_public_help')))
+        .tabBar(this.buildTabBarItem('学习', 6, $r('app.media.ic_public_help')))
 
         // 我的
         TabContent() {
           MinePage();
         }
-        .tabBar(this.buildTabBarItem('我的', 5, $r('app.media.ic_public_settings')))
+        .tabBar(this.buildTabBarItem('我的', 7, $r('app.media.ic_public_settings')))
       }
-      .barPosition(BarPosition.End)
+      .barHeight(0) // 隐藏底部导航栏
+      .scrollable(false) // 禁止滑动切换
       .onChange((index: number) => {
-        animateTo({
-          duration: TABBAR_ANIMATION.duration,
-          curve: TABBAR_ANIMATION.curve
-        }, () => {
-          this.currentTabIndex = index;
-        });
+        this.currentTabIndex = index;
       })
-      .animationDuration(TABBAR_ANIMATION.duration) // 页面切换动画时长
-      .barBackgroundColor(ThemeColors.background) // 导航栏背景色
-      .barBackgroundBlurStyle(BlurStyle.Thin) // 毛玻璃效果
-      .barMode(BarMode.Fixed) // 固定模式
       .width('100%')
       .height('100%')
+
+      // 悬浮侧边栏按钮 (常驻)
+      if (!this.isSidebarOpen) {
+        Button({ type: ButtonType.Circle }) {
+          Image($r('app.media.ic_public_drawer')) // Using drawer icon
+            .width(24)
+            .height(24)
+            .fillColor(ThemeColors.primary)
+        }
+        .width(48)
+        .height(48)
+        .backgroundColor('rgba(255, 255, 255, 0.9)')
+        .shadow({ radius: 8, color: 'rgba(0, 0, 0, 0.15)', offsetY: 4 })
+        .position({ x: this.buttonX, y: this.buttonY })
+        .onClick(() => {
+          animateTo({ duration: 300, curve: Curve.EaseOut }, () => {
+            this.isSidebarOpen = true;
+          })
+        })
+        .gesture(
+          PanGesture({ fingers: 1, direction: PanDirection.All, distance: 5 })
+            .onActionStart(() => {
+              this.dragStartX = this.buttonX;
+              this.dragStartY = this.buttonY;
+            })
+            .onActionUpdate((event: GestureEvent) => {
+              this.buttonX = this.dragStartX + event.offsetX;
+              this.buttonY = this.dragStartY + event.offsetY;
+            })
+        )
+        .zIndex(99)
+      }
+
+      // 侧边栏遮罩
+      if (this.isSidebarOpen) {
+        Column()
+          .width('100%')
+          .height('100%')
+          .backgroundColor('rgba(0, 0, 0, 0.4)')
+          .onClick(() => {
+            animateTo({ duration: 300, curve: Curve.EaseOut }, () => {
+              this.isSidebarOpen = false;
+            })
+          })
+          .transition({ type: TransitionType.All, opacity: 0 })
+          .zIndex(100)
+      }
+
+      // 侧边栏
+      if (this.isSidebarOpen) {
+        Stack() {
+          this.buildSidebar()
+        }
+        .width('100%')
+        .height('100%')
+        .hitTestBehavior(HitTestMode.Transparent)
+        .transition({ type: TransitionType.All, translate: { x: '100%' } })
+        .zIndex(101)
+      }
 
       // 加载遮罩
       LoadingOverlay({ isLoading: $isProcessing, message: '处理中...' })
@@ -1557,5 +1627,91 @@ struct Index {
       this.isExtracting = false;
       this.isProcessing = false; // 隐藏加载遮罩
     }
+  }
+  // 侧边栏
+  @Builder
+  buildSidebar() {
+    Column() {
+      // 侧边栏头部
+      Column() {
+        Row() {
+          Text('功能菜单')
+            .fontSize(24)
+            .fontWeight(FontWeight.Bold)
+            .fontColor(ThemeColors.textPrimary)
+          
+          Blank()
+          
+          Button({ type: ButtonType.Circle }) {
+            Text('×')
+              .fontSize(24)
+              .fontColor(ThemeColors.textSecondary)
+          }
+          .width(32)
+          .height(32)
+          .backgroundColor('transparent')
+          .onClick(() => {
+            animateTo({ duration: 300, curve: Curve.EaseOut }, () => {
+              this.isSidebarOpen = false;
+            })
+          })
+        }
+        .width('100%')
+        .padding({ left: 24, right: 24, top: 60, bottom: 24 })
+      }
+
+      // 菜单列表
+      List() {
+        ListItem() { this.buildSidebarItem('提取', 0, $r('app.media.ic_gallery_create')) }
+        ListItem() { this.buildSidebarItem('配色库', 1, $r('app.media.ic_public_folder')) }
+        ListItem() { this.buildSidebarItem('实验室', 2, $r('app.media.ic_gallery_free')) }
+        ListItem() { this.buildSidebarItem('设计', 3, $r('app.media.ic_public_detail')) }
+        ListItem() { this.buildSidebarItem('灵感', 4, $r('app.media.ic_public_favor')) }
+        ListItem() { this.buildSidebarItem('情绪板', 5, $r('app.media.ic_public_edit')) }
+        ListItem() { this.buildSidebarItem('学习', 6, $r('app.media.ic_public_help')) }
+        ListItem() { this.buildSidebarItem('我的', 7, $r('app.media.ic_public_settings')) }
+      }
+      .width('100%')
+      .layoutWeight(1)
+      .padding({ left: 16, right: 16 })
+    }
+    .width('70%')
+    .height('100%')
+    .backgroundColor(ThemeColors.background)
+    .position({ x: '30%', y: 0 }) // Right side
+    .shadow({ radius: 40, color: 'rgba(0, 0, 0, 0.2)', offsetX: -10 })
+  }
+
+  @Builder
+  buildSidebarItem(title: string, index: number, icon: Resource) {
+    Row({ space: 16 }) {
+      Image(icon)
+        .width(24)
+        .height(24)
+        .fillColor(this.currentTabIndex === index ? ThemeColors.primary : ThemeColors.textSecondary)
+      
+      Text(title)
+        .fontSize(16)
+        .fontWeight(this.currentTabIndex === index ? FontWeight.Bold : FontWeight.Medium)
+        .fontColor(this.currentTabIndex === index ? ThemeColors.primary : ThemeColors.textPrimary)
+      
+      Blank()
+      
+      if (this.currentTabIndex === index) {
+        Circle({ width: 8, height: 8 })
+          .fill(ThemeColors.primary)
+      }
+    }
+    .width('100%')
+    .padding({ left: 16, right: 16, top: 16, bottom: 16 })
+    .backgroundColor(this.currentTabIndex === index ? ThemeColors.primaryLight : 'transparent')
+    .borderRadius(12)
+    .margin({ bottom: 8 })
+    .onClick(() => {
+      this.currentTabIndex = index;
+      animateTo({ duration: 300, curve: Curve.EaseOut }, () => {
+        this.isSidebarOpen = false;
+      })
+    })
   }
 }

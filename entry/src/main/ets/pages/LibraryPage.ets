@@ -14,12 +14,272 @@ import { GlassCard, ColorfulGlassCard } from '../components/GlassCard';
 import { ColorCircle, OverlappingColorCircles, PrimaryColorDisplay } from '../components/ColorCircle';
 import { ColorAnalyzer, ColorEmotionAnalysis, ContrastCheckResult } from '../utils/ColorAnalyzer';
 import { ColorCompareDialog } from '../components/ColorCompareDialog';
+import { ColorStory, ColorStoryGenerator } from '../utils/ColorStoryGenerator';
+import { MusicRecommendation, MusicRecommender } from '../utils/MusicRecommender';
 
 // 列表项接口（用于 UI 预览）
 interface ListItemData {
   title: string;
   subtitle: string;
   color: number;
+}
+
+// 配色故事对话框
+@CustomDialog
+struct ColorStoryDialog {
+  controller: CustomDialogController = new CustomDialogController({
+    builder: ColorStoryDialog()
+  });
+  scheme: ColorScheme = { name: '', colors: [], createTime: 0 };
+  @State story: ColorStory | null = null;
+  @State musicRecommendations: MusicRecommendation[] = [];
+  @State currentTab: number = 0; // 0-故事 1-音乐
+
+  aboutToAppear() {
+    this.generateStory();
+    this.generateMusic();
+  }
+
+  generateStory() {
+    this.story = ColorStoryGenerator.generateStory(this.scheme.colors);
+  }
+
+  generateMusic() {
+    this.musicRecommendations = MusicRecommender.recommendMusic(this.scheme.colors);
+  }
+
+  build() {
+    Column() {
+      // 标题栏
+      Row() {
+        Text('✨ 配色故事')
+          .fontSize(20)
+          .fontWeight(FontWeight.Bold)
+          .fontColor(ThemeColors.textPrimary)
+          .layoutWeight(1)
+
+        Button({ type: ButtonType.Circle }) {
+          Text('×')
+            .fontSize(24)
+            .fontColor(ThemeColors.textSecondary)
+        }
+        .width(32)
+        .height(32)
+        .backgroundColor('transparent')
+        .onClick(() => {
+          this.controller.close();
+        })
+      }
+      .width('100%')
+      .padding({ bottom: 16 })
+
+      // 配色预览
+      Row() {
+        ForEach(this.scheme.colors, (color: string) => {
+          Row()
+            .width(`${100 / this.scheme.colors.length}%`)
+            .height(60)
+            .backgroundColor(color)
+        })
+      }
+      .width('100%')
+      .borderRadius(12)
+      .clip(true)
+      .margin({ bottom: 16 })
+
+      // 标签页切换
+      Row() {
+        Text('📖 故事')
+          .fontSize(15)
+          .fontWeight(this.currentTab === 0 ? FontWeight.Bold : FontWeight.Normal)
+          .fontColor(this.currentTab === 0 ? ThemeColors.primary : ThemeColors.textSecondary)
+          .layoutWeight(1)
+          .textAlign(TextAlign.Center)
+          .padding({ bottom: 8 })
+          .border({
+            width: { bottom: this.currentTab === 0 ? 2 : 0 },
+            color: ThemeColors.primary
+          })
+          .onClick(() => {
+            this.currentTab = 0;
+          })
+
+        Text('🎵 音乐')
+          .fontSize(15)
+          .fontWeight(this.currentTab === 1 ? FontWeight.Bold : FontWeight.Normal)
+          .fontColor(this.currentTab === 1 ? ThemeColors.primary : ThemeColors.textSecondary)
+          .layoutWeight(1)
+          .textAlign(TextAlign.Center)
+          .padding({ bottom: 8 })
+          .border({
+            width: { bottom: this.currentTab === 1 ? 2 : 0 },
+            color: ThemeColors.primary
+          })
+          .onClick(() => {
+            this.currentTab = 1;
+          })
+      }
+      .width('100%')
+      .margin({ bottom: 16 })
+
+      // 内容区域
+      Scroll() {
+        if (this.currentTab === 0 && this.story) {
+          this.buildStoryContent();
+        } else if (this.currentTab === 1) {
+          this.buildMusicContent();
+        }
+      }
+      .layoutWeight(1)
+      .scrollBar(BarState.Auto)
+    }
+    .width('100%')
+    .height(600)
+    .padding(20)
+    .backgroundColor(ThemeColors.background)
+    .borderRadius(16)
+  }
+
+  @Builder
+  buildStoryContent() {
+    Column({ space: 16 }) {
+      // 故事标题
+      Text(this.story!.title)
+        .fontSize(22)
+        .fontWeight(FontWeight.Bold)
+        .fontColor(ThemeColors.textPrimary)
+        .width('100%')
+
+      // 标签
+      Row({ space: 8 }) {
+        Text(this.story!.season)
+          .fontSize(12)
+          .fontColor(ThemeColors.textSecondary)
+          .padding({ left: 8, right: 8, top: 4, bottom: 4 })
+          .backgroundColor(ThemeColors.backgroundSecondary)
+          .borderRadius(8)
+
+        Text(this.story!.timeOfDay)
+          .fontSize(12)
+          .fontColor(ThemeColors.textSecondary)
+          .padding({ left: 8, right: 8, top: 4, bottom: 4 })
+          .backgroundColor(ThemeColors.backgroundSecondary)
+          .borderRadius(8)
+
+        Text(this.story!.emotion)
+          .fontSize(12)
+          .fontColor(ThemeColors.primary)
+          .padding({ left: 8, right: 8, top: 4, bottom: 4 })
+          .backgroundColor(ThemeColors.primaryLight)
+          .borderRadius(8)
+      }
+      .width('100%')
+
+      // 故事描述
+      Text(this.story!.description)
+        .fontSize(15)
+        .fontColor(ThemeColors.textSecondary)
+        .lineHeight(24)
+        .width('100%')
+
+      // 场景
+      Column({ space: 8 }) {
+        Text('场景')
+          .fontSize(14)
+          .fontWeight(FontWeight.Bold)
+          .fontColor(ThemeColors.textPrimary)
+
+        Text(this.story!.scene)
+          .fontSize(14)
+          .fontColor(ThemeColors.textSecondary)
+      }
+      .width('100%')
+      .alignItems(HorizontalAlign.Start)
+      .padding(12)
+      .backgroundColor(ThemeColors.backgroundSecondary)
+      .borderRadius(12)
+
+      // 关键词
+      Column({ space: 8 }) {
+        Text('灵感关键词')
+          .fontSize(14)
+          .fontWeight(FontWeight.Bold)
+          .fontColor(ThemeColors.textPrimary)
+
+        Flex({ wrap: FlexWrap.Wrap }) {
+          ForEach(this.story!.keywords, (keyword: string) => {
+            Text(keyword)
+              .fontSize(13)
+              .fontColor(ThemeColors.primary)
+              .padding({ left: 10, right: 10, top: 5, bottom: 5 })
+              .backgroundColor(ThemeColors.primaryLight)
+              .borderRadius(12)
+              .margin({ right: 6, bottom: 6 })
+          })
+        }
+        .width('100%')
+      }
+      .width('100%')
+      .alignItems(HorizontalAlign.Start)
+      .padding(12)
+      .backgroundColor(ThemeColors.backgroundSecondary)
+      .borderRadius(12)
+    }
+    .width('100%')
+  }
+
+  @Builder
+  buildMusicContent() {
+    Column({ space: 12 }) {
+      ForEach(this.musicRecommendations, (music: MusicRecommendation) => {
+        Column({ space: 10 }) {
+          Row({ space: 10 }) {
+            Text('🎵')
+              .fontSize(28)
+
+            Column({ space: 4 }) {
+              Text(music.title)
+                .fontSize(16)
+                .fontWeight(FontWeight.Bold)
+                .fontColor(ThemeColors.textPrimary)
+
+              Text(music.artist)
+                .fontSize(13)
+                .fontColor(ThemeColors.textSecondary)
+            }
+            .layoutWeight(1)
+            .alignItems(HorizontalAlign.Start)
+          }
+          .width('100%')
+
+          Text(music.description)
+            .fontSize(14)
+            .fontColor(ThemeColors.textSecondary)
+            .lineHeight(20)
+
+          Row({ space: 12 }) {
+            Text(`类型: ${music.genre}`)
+              .fontSize(12)
+              .fontColor(ThemeColors.textTertiary)
+
+            Text(`情绪: ${music.mood}`)
+              .fontSize(12)
+              .fontColor(ThemeColors.primary)
+
+            Text(`节奏: ${music.tempo}`)
+              .fontSize(12)
+              .fontColor(ThemeColors.textTertiary)
+          }
+          .width('100%')
+        }
+        .width('100%')
+        .padding(12)
+        .backgroundColor(ThemeColors.backgroundSecondary)
+        .borderRadius(12)
+      })
+    }
+    .width('100%')
+  }
 }
 
 // 配色分析对话框
@@ -2364,6 +2624,19 @@ export struct LibraryPage {
     this.analysisDialogController.open();
   }
 
+  // 显示配色故事对话框
+  showStoryDialog(scheme: ColorScheme) {
+    const storyDialogController = new CustomDialogController({
+      builder: ColorStoryDialog({
+        scheme: scheme
+      }),
+      alignment: DialogAlignment.Center,
+      autoCancel: true,
+      customStyle: true
+    });
+    storyDialogController.open();
+  }
+
   // 显示配色对比对话框
   showCompareDialog() {
     if (this.filteredSchemes.length < 2) {
@@ -2885,7 +3158,7 @@ export struct LibraryPage {
         .fontColor(ThemeColors.textTertiary)
         .margin({ bottom: 10 })
 
-      // 操作按钮组 - 圆形毛玻璃按钮
+      // 操作按钮组 - 圆形毛玻璃按钮（第一行）
       Row({ space: 8 }) {
         this.buildGlassActionButton($r('app.media.ic_public_detail'), '预览', () => {
           this.showPreviewDialog(scheme);
@@ -2921,6 +3194,15 @@ export struct LibraryPage {
       }
       .width('100%')
       .justifyContent(FlexAlign.SpaceBetween)
+
+      // 操作按钮组 - 第二行（新增故事按钮）
+      Row({ space: 8 }) {
+        this.buildGlassActionButton($r('app.media.ic_public_edit'), '故事', () => {
+          this.showStoryDialog(scheme);
+        })
+      }
+      .width('100%')
+      .margin({ top: 8 })
     }
     .width('100%')
   }

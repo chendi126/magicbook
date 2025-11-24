@@ -25,24 +25,32 @@ export struct GuideOverlay {
   // 引导步骤
   private guideSteps: GuideStep[] = [
     {
-      title: '欢迎使用色彩灵感收集器！',
-      description: '让我们快速了解如何使用这个应用'
+      title: '欢迎使用拾色师！',
+      description: '一个帮你发现、记录和管理色彩灵感的应用'
     },
     {
-      title: '📸 提取配色',
-      description: '点击"选择图片"按钮，从照片中提取美丽的配色方案'
+      title: '🎯 侧边栏导航',
+      description: '点击右上角的悬浮按钮打开菜单，访问所有功能。长按可以拖动按钮位置'
+    },
+    {
+      title: '📸 色彩提取',
+      description: '从照片中提取美丽的配色方案，支持自动提取和手动取色'
     },
     {
       title: '📚 配色库',
-      description: '所有保存的配色方案都在这里，支持搜索、筛选和分组'
+      description: '保存和管理你的配色方案，支持搜索、筛选和分组'
     },
     {
-      title: '🎨 灵感广场',
-      description: '浏览 30+ 精选配色方案，一键保存到配色库'
+      title: '📝 情绪日记',
+      description: '用色彩记录每天的心情，配上天气和笔记，打造专属情绪时间线'
+    },
+    {
+      title: '🎨 更多功能',
+      description: '色彩实验室、UI预览、灵感广场、学习中心等更多工具等你探索'
     },
     {
       title: '开始使用吧！',
-      description: '现在你已经了解了所有功能，开始创作吧！'
+      description: '现在你已经了解了所有功能，开始你的色彩之旅！'
     }
   ];
 
