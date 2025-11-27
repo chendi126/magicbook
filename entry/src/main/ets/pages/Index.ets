@@ -22,7 +22,8 @@ import { PreferencesManager } from '../utils/PreferencesManager';
 import { ThemeColors } from '../utils/ThemeColors';
 import { TABBAR_ANIMATION } from '../utils/AnimationUtils';
 import { ColorFormatUtils } from '../utils/ColorFormatUtils';
-
+import vibrator from '@ohos.vibrator'; // [新增]
+import curves from '@ohos.curves';     // [新增]
 
 // 保存配色方案对话框
 @CustomDialog
@@ -234,7 +235,7 @@ struct SaveSchemeDialog {
 @Entry
 @Component
 struct Index {
-  @State currentTabIndex: number = 0;
+  @StorageLink('CurrentTabIndex') currentTabIndex: number = 0;
   @State selectedImageUri: string = '';
   @State extractedColors: ColorInfo[] = [];
   @State isExtracting: boolean = false;
@@ -270,6 +271,21 @@ struct Index {
     autoCancel: true,
     alignment: DialogAlignment.Center
   })
+
+  // [新增] 震动反馈辅助方法
+  triggerImpact() {
+    try {
+      vibrator.startVibration({
+        type: 'preset',
+        effectId: 'haptic.clock.timer',
+        count: 1,
+      }, {
+        usage: 'touch'
+      });
+    } catch (err) {
+      // 忽略不支持震动的设备
+    }
+  }
 
   async aboutToAppear() {
     // 初始化 PreferencesManager
@@ -1016,7 +1032,14 @@ struct Index {
 
       // 详细颜色列表
       ForEach(this.extractedColors, (color: ColorInfo, index: number) => {
-        this.buildColorItem(color, index);
+        // [修改] 使用新的带动画组件替换旧的 buildColorItem
+        AnimatableColorCard({
+          color: color,
+          index: index,
+          onCopy: (val: string, type: string) => {
+            this.copyColorValue(val, type)
+          }
+        })
       })
     }
     .width('100%')
@@ -1182,6 +1205,7 @@ struct Index {
         })
         .borderRadius(26)
         .stateEffect(true)
+        .clickEffect({ level: ClickEffectLevel.HEAVY, scale: 0.9 }) // [新增] 鸿蒙原生按压回弹效果
         .shadow({
           radius: 16,
           color: 'rgba(0, 122, 255, 0.4)',
@@ -1189,6 +1213,7 @@ struct Index {
           offsetY: 6
         })
         .onClick(() => {
+          this.triggerImpact(); // [新增] 触发震动
           this.saveDialogController.open();
         })
       }
@@ -1712,6 +1737,126 @@ struct Index {
       animateTo({ duration: 300, curve: Curve.EaseOut }, () => {
         this.isSidebarOpen = false;
       })
+    })
+  }
+}
+
+// [新增] 这是一个带动画和震动反馈的独立颜色卡片组件
+@Component
+struct AnimatableColorCard {
+  // 接收数据（给默认值防止初始化报错）
+  color: ColorInfo = { hex: '#000000', rgb: 'rgb(0,0,0)' };
+  index: number = 0;
+  // 回调函数
+  onCopy: (text: string, type: string) => void = () => {};
+
+  @State scaleValue: number = 1;
+
+  // 触发果冻动画和震动
+  triggerBounce() {
+    try {
+      vibrator.startVibration({ type: 'preset', effectId: 'haptic.clock.timer', count: 1 }, { usage: 'touch' });
+    } catch (e) {}
+
+    animateTo({ duration: 100, curve: Curve.EaseOut }, () => {
+      this.scaleValue = 0.95;
+    })
+
+    setTimeout(() => {
+      animateTo({
+        duration: 600,
+        curve: curves.springMotion(0.6, 0.7), // 弹性曲线
+      }, () => {
+        this.scaleValue = 1;
+      })
+    }, 100)
+  }
+
+  build() {
+    Column() {
+      Row() {
+        // 颜色块 (点击有动画)
+        Column()
+          .width(70)
+          .height(70)
+          .backgroundColor(this.color.hex)
+          .borderRadius(12)
+          .scale({ x: this.scaleValue, y: this.scaleValue }) // 绑定动画
+          .shadow({
+            radius: 8,
+            color: this.color.hex + '40',
+            offsetX: 0,
+            offsetY: 2
+          })
+          .onClick(() => {
+            this.triggerBounce();
+            this.onCopy(this.color.hex, 'HEX');
+          })
+
+        // 颜色信息
+        Column({ space: 6 }) {
+          Text(`颜色 ${this.index + 1}`)
+            .fontSize(15)
+            .fontWeight(FontWeight.Bold)
+            .fontColor(ThemeColors.textPrimary)
+
+          Row({ space: 4 }) {
+            Text('HEX').fontSize(12).fontColor(ThemeColors.textPlaceholder).width(40)
+            Text(this.color.hex).fontSize(14).fontColor(ThemeColors.textSecondary).fontWeight(FontWeight.Medium).fontFamily('monospace')
+          }
+
+          Row({ space: 4 }) {
+            Text('RGB').fontSize(12).fontColor(ThemeColors.textPlaceholder).width(40)
+            Text(this.color.rgb).fontSize(14).fontColor(ThemeColors.textSecondary).fontFamily('monospace')
+          }
+
+          if (this.color.percentage !== undefined) {
+            Row({ space: 4 }) {
+              Text('占比').fontSize(12).fontColor(ThemeColors.textPlaceholder).width(40)
+              Text(`${this.color.percentage}%`).fontSize(14).fontColor(ThemeColors.primary).fontWeight(FontWeight.Bold)
+            }
+          }
+        }
+        .alignItems(HorizontalAlign.Start)
+        .layoutWeight(1)
+        .margin({ left: 16 })
+      }
+      .width('100%')
+
+      // 按钮组
+      Row({ space: 10 }) {
+        this.BuildCopyButton('HEX', this.color.hex, ThemeColors.primary, ThemeColors.primaryLight)
+        this.BuildCopyButton('RGB', this.color.rgb, ThemeColors.success, ThemeColors.successLight)
+      }
+      .width('100%')
+      .margin({ top: 12 })
+    }
+    .width('100%')
+    .padding(16)
+    .backgroundColor(ThemeColors.backgroundCard)
+    .borderRadius(16)
+    .margin({ bottom: 12 })
+    .shadow({ radius: 8, color: ThemeColors.shadowLight, offsetY: 2 })
+  }
+
+  @Builder
+  BuildCopyButton(label: string, value: string, mainColor: string, bgColor: string) {
+    Row() {
+      Image($r('app.media.ic_public_copy'))
+        .width(16).height(16).fillColor(mainColor).margin({ right: 4 })
+      Text(label)
+        .fontSize(13).fontWeight(FontWeight.Medium).fontColor(mainColor)
+    }
+    .padding({ left: 16, right: 16, top: 8, bottom: 8 })
+    .backgroundColor(bgColor)
+    .borderRadius(20)
+    .layoutWeight(1)
+    .justifyContent(FlexAlign.Center)
+    .useEffect(true)
+    .clickEffect({ level: ClickEffectLevel.LIGHT, scale: 0.95 }) // 按钮点击效果
+    .onClick(() => {
+      this.triggerBounce();
+      this.onCopy(value, label);
     })
   }
 }

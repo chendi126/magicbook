@@ -1,6 +1,7 @@
 // 我的页面
 import { ThemeManager, ThemeMode } from '../utils/ThemeManager';
 import { ThemeColors } from '../utils/ThemeColors';
+
 import promptAction from '@ohos.promptAction';
 import { PreferencesManager } from '../utils/PreferencesManager';
 import router from '@ohos.router';
@@ -72,6 +73,19 @@ export struct MinePage {
         Column() {
           // 用户信息卡片
           this.buildUserCard();
+
+          // 创新功能分组标题
+          Text('探索')
+            .fontSize(14)
+            .fontWeight(FontWeight.Medium)
+            .fontColor(ThemeColors.textSecondary)
+            .margin({ top: 24, bottom: 12, left: 4 })
+
+          // 色彩性格图谱入口
+          this.buildColorPersonalityCard();
+
+          // 成就中心入口
+          this.buildAchievementCard();
 
           // 设置分组标题
           Text('设置')
@@ -167,12 +181,15 @@ export struct MinePage {
     }
     .width('100%')
     .padding(24)
-    .backgroundColor(ThemeColors.background)
+    .linearGradient({
+      angle: 135,
+      colors: [[ThemeColors.background, 0.0], [ThemeColors.backgroundSecondary, 1.0]]
+    })
     .borderRadius(16)
     .shadow({
-      radius: 8,
-      color: ThemeColors.shadowLight,
-      offsetY: 2
+      radius: 12,
+      color: ThemeColors.shadowMedium,
+      offsetY: 4
     })
   }
 
@@ -640,6 +657,96 @@ export struct MinePage {
     .width('100%')
     .alignItems(HorizontalAlign.Start)
     .margin({ bottom: 20 })
+  }
+
+  // 色彩性格图谱卡片
+  @Builder
+  buildColorPersonalityCard() {
+    Row() {
+      // 图标
+      Image($r('app.media.ic_public_favor'))
+        .width(24)
+        .height(24)
+        .fillColor(ThemeColors.primary)
+        .margin({ right: 12 })
+
+      Column() {
+        Text('色彩性格图谱')
+          .fontSize(16)
+          .fontWeight(FontWeight.Medium)
+          .fontColor(ThemeColors.textPrimary)
+          .margin({ bottom: 4 })
+
+        Text('发现你的色彩DNA')
+          .fontSize(13)
+          .fontColor(ThemeColors.textSecondary)
+      }
+      .alignItems(HorizontalAlign.Start)
+      .layoutWeight(1)
+
+      Image($r('app.media.ic_public_arrow_right'))
+        .width(16)
+        .height(16)
+        .fillColor(ThemeColors.textTertiary)
+    }
+    .width('100%')
+    .padding(16)
+    .backgroundColor(ThemeColors.background)
+    .borderRadius(12)
+    .margin({ bottom: 8 })
+    .shadow({
+      radius: 4,
+      color: ThemeColors.shadowLight,
+      offsetY: 1
+    })
+    .onClick(() => {
+      router.pushUrl({ url: 'pages/ColorPersonalityPage' });
+    })
+  }
+
+  // 成就中心卡片
+  @Builder
+  buildAchievementCard() {
+    Row() {
+      // 图标
+      Image($r('app.media.ic_public_ok_filled'))
+        .width(24)
+        .height(24)
+        .fillColor(ThemeColors.primary)
+        .margin({ right: 12 })
+
+      Column() {
+        Text('成就中心')
+          .fontSize(16)
+          .fontWeight(FontWeight.Medium)
+          .fontColor(ThemeColors.textPrimary)
+          .margin({ bottom: 4 })
+
+        Text('解锁专属成就徽章')
+          .fontSize(13)
+          .fontColor(ThemeColors.textSecondary)
+      }
+      .alignItems(HorizontalAlign.Start)
+      .layoutWeight(1)
+
+      Image($r('app.media.ic_public_arrow_right'))
+        .width(16)
+        .height(16)
+        .fillColor(ThemeColors.textTertiary)
+    }
+    .width('100%')
+    .padding(16)
+    .backgroundColor(ThemeColors.background)
+    .borderRadius(12)
+    .margin({ bottom: 8 })
+    .shadow({
+      radius: 4,
+      color: ThemeColors.shadowLight,
+      offsetY: 1
+    })
+    .onClick(() => {
+      router.pushUrl({ url: 'pages/AchievementPage' });
+    })
   }
 
   // 5. 反馈建议半模态内容

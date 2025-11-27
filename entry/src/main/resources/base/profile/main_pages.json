@@ -1,6 +1,8 @@
 {
   "src": [
     "pages/Index",
-    "pages/Yinsi"
+    "pages/Yinsi",
+    "pages/AchievementPage",
+    "pages/ColorPersonalityPage"
   ]
 }

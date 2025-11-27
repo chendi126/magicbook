@@ -1,150 +1,81 @@
-// 主题颜色工具类
-import { ConfigurationConstant } from '@kit.AbilityKit';
-import { ThemeManager } from './ThemeManager';
-
 /**
- * 主题颜色管理类
- * 根据当前主题模式返回适配的颜色值
+ * 主题颜色常量
+ * 定义应用中使用的所有颜色
  */
 export class ThemeColors {
-  /**
-   * 判断是否为深色模式
-   */
-  private static isDark(): boolean {
-    const themeManager = ThemeManager.getInstance();
-    return themeManager.currentColorMode === ConfigurationConstant.ColorMode.COLOR_MODE_DARK;
-  }
+  // 主色调
+  static readonly primary: string = '#007AFF';
+  static readonly primaryLight: string = 'rgba(0, 122, 255, 0.15)';
+  static readonly primaryDark: string = '#0051D5';
 
-  // ========== 背景颜色 ==========
+  // 语义颜色
+  static readonly success: string = '#34C759';
+  static readonly successLight: string = 'rgba(52, 199, 89, 0.15)';
+  static readonly warning: string = '#FF9500';
+  static readonly warningLight: string = 'rgba(255, 149, 0, 0.15)';
+  static readonly error: string = '#FF3B30';
+  static readonly errorLight: string = 'rgba(255, 59, 48, 0.15)';
+  static readonly info: string = '#5AC8FA';
+  static readonly infoLight: string = 'rgba(90, 200, 250, 0.15)';
 
-  /** 主背景色 */
-  static get background(): string {
-    return ThemeColors.isDark() ? '#000000' : '#FFFFFF';
-  }
+  // 文本颜色
+  static readonly textPrimary: string = '#000000';
+  static readonly textSecondary: string = '#666666';
+  static readonly textTertiary: string = '#999999';
+  static readonly textPlaceholder: string = '#C7C7CC';
+  static readonly textDisabled: string = '#D1D1D6';
 
-  /** 次级背景色 */
-  static get backgroundSecondary(): string {
-    return ThemeColors.isDark() ? '#1C1C1E' : '#F5F5F5';
-  }
+  // 背景颜色
+  static readonly background: string = '#FFFFFF';
+  static readonly backgroundSecondary: string = '#F5F5F5';
+  static readonly backgroundTertiary: string = '#EEEEEE';
+  static readonly backgroundElevated: string = '#FFFFFF';
+  static readonly backgroundCard: string = '#FFFFFF';
+  static readonly backgroundInput: string = '#F2F2F7';
+  static readonly backgroundOverlay: string = 'rgba(0, 0, 0, 0.4)';
 
-  /** 卡片背景色 */
-  static get backgroundCard(): string {
-    return ThemeColors.isDark() ? '#1C1C1E' : '#F9F9F9';
-  }
+  // 分隔线颜色
+  static readonly separator: string = '#E5E5EA';
+  static readonly separatorLight: string = '#F2F2F7';
 
-  /** 输入框背景色 */
-  static get backgroundInput(): string {
-    return ThemeColors.isDark() ? '#2C2C2E' : '#F0F0F0';
-  }
+  // 阴影颜色
+  static readonly shadowLight: string = 'rgba(0, 0, 0, 0.05)';
+  static readonly shadowMedium: string = 'rgba(0, 0, 0, 0.1)';
+  static readonly shadowHeavy: string = 'rgba(0, 0, 0, 0.2)';
 
-  /** 悬浮背景色 */
-  static get backgroundElevated(): string {
-    return ThemeColors.isDark() ? '#2C2C2E' : '#F8F8F8';
-  }
+  // 特殊颜色
+  static readonly purple: string = '#AF52DE';
+  static readonly purpleLight: string = 'rgba(175, 82, 222, 0.15)';
+  static readonly teal: string = '#5AC8FA';
+  static readonly tealLight: string = 'rgba(90, 200, 250, 0.15)';
+  static readonly pink: string = '#FF2D55';
+  static readonly pinkLight: string = 'rgba(255, 45, 85, 0.15)';
+  static readonly orange: string = '#FF9500';
+  static readonly orangeLight: string = 'rgba(255, 149, 0, 0.15)';
+  static readonly green: string = '#34C759';
+  static readonly greenLight: string = 'rgba(52, 199, 89, 0.15)';
+  static readonly blue: string = '#007AFF';
+  static readonly blueLight: string = 'rgba(0, 122, 255, 0.15)';
+  static readonly indigo: string = '#5856D6';
+  static readonly indigoLight: string = 'rgba(88, 86, 214, 0.15)';
+  static readonly yellow: string = '#FFCC00';
+  static readonly yellowLight: string = 'rgba(255, 204, 0, 0.15)';
+  static readonly red: string = '#FF3B30';
+  static readonly redLight: string = 'rgba(255, 59, 48, 0.15)';
 
-  // ========== 文字颜色 ==========
+  // 边框颜色
+  static readonly border: string = '#E5E5EA';
+  static readonly borderLight: string = '#F2F2F7';
+  static readonly borderDark: string = '#D1D1D6';
 
-  /** 主文字颜色 */
-  static get textPrimary(): string {
-    return ThemeColors.isDark() ? '#FFFFFF' : '#000000';
-  }
+  // 透明度
+  static readonly transparent: string = 'transparent';
+  static readonly white: string = '#FFFFFF';
+  static readonly black: string = '#000000';
 
-  /** 次级文字颜色 */
-  static get textSecondary(): string {
-    return ThemeColors.isDark() ? '#EBEBF5' : '#333333';
-  }
-
-  /** 三级文字颜色 */
-  static get textTertiary(): string {
-    return ThemeColors.isDark() ? '#AEAEB2' : '#666666';
-  }
-
-  /** 占位符文字颜色 */
-  static get textPlaceholder(): string {
-    return ThemeColors.isDark() ? '#8E8E93' : '#999999';
-  }
-
-  /** 禁用文字颜色 */
-  static get textDisabled(): string {
-    return ThemeColors.isDark() ? '#636366' : '#CCCCCC';
-  }
-
-  // ========== 分割线颜色 ==========
-
-  /** 分割线颜色 */
-  static get divider(): string {
-    return ThemeColors.isDark() ? '#38383A' : '#E0E0E0';
-  }
-
-  /** 边框颜色 */
-  static get border(): string {
-    return ThemeColors.isDark() ? '#38383A' : '#E0E0E0';
-  }
-
-  // ========== 品牌颜色（不随主题变化） ==========
-
-  /** 主题色 - 蓝色 */
-  static get primary(): string {
-    return '#007AFF';
-  }
-
-  /** 成功色 - 绿色 */
-  static get success(): string {
-    return '#34C759';
-  }
-
-  /** 警告色 - 橙色 */
-  static get warning(): string {
-    return '#FF9500';
-  }
-
-  /** 错误色 - 红色 */
-  static get error(): string {
-    return '#FF3B30';
-  }
-
-  /** 紫色 */
-  static get purple(): string {
-    return '#5856D6';
-  }
-
-  // ========== 品牌颜色的浅色背景 ==========
-
-  /** 主题色浅色背景 */
-  static get primaryLight(): string {
-    return ThemeColors.isDark() ? '#1A3A5C' : '#E5F2FF';
-  }
-
-  /** 成功色浅色背景 */
-  static get successLight(): string {
-    return ThemeColors.isDark() ? '#1A3A2C' : '#E8F5E9';
-  }
-
-  /** 警告色浅色背景 */
-  static get warningLight(): string {
-    return ThemeColors.isDark() ? '#3A2C1A' : '#FFF3E0';
-  }
-
-  /** 错误色浅色背景 */
-  static get errorLight(): string {
-    return ThemeColors.isDark() ? '#3A1A1A' : '#FFEBEE';
-  }
-
-  // ========== 阴影颜色 ==========
-
-  /** 阴影颜色 - 轻 */
-  static get shadowLight(): string {
-    return ThemeColors.isDark() ? 'rgba(0, 0, 0, 0.3)' : 'rgba(0, 0, 0, 0.1)';
-  }
-
-  /** 阴影颜色 - 中 */
-  static get shadowMedium(): string {
-    return ThemeColors.isDark() ? 'rgba(0, 0, 0, 0.5)' : 'rgba(0, 0, 0, 0.2)';
-  }
-
-  /** 阴影颜色 - 重 */
-  static get shadowHeavy(): string {
-    return ThemeColors.isDark() ? 'rgba(0, 0, 0, 0.7)' : 'rgba(0, 0, 0, 0.3)';
-  }
+  // 渐变色
+  static readonly gradientPrimary: string[] = ['#007AFF', '#00C6FF'];
+  static readonly gradientSecondary: string[] = ['#AF52DE', '#FF2D55'];
+  static readonly gradientWarning: string[] = ['#FF9500', '#FF3B30'];
+  static readonly gradientSuccess: string[] = ['#34C759', '#30D158'];
 }
-
